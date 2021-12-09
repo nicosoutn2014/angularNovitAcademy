@@ -1,0 +1,35 @@
+<p>{{prop}}</p>
+<mat-divider></mat-divider>
+Nuevo Usuario:
+<input [(ngModel)]="nombre" placeholder="Escriba su nombre"/>
+<input [(ngModel)]="apellido" placeholder="Escriba su apellido"/>
+<button (click)="showInputValue()">Mostrar valores</button>
+<br/>
+<br/>
+Usuario a Modificar:
+<input [(ngModel)]="usuarioDelServer.nombre" placeholder="Escriba su nombre"/>
+<input [(ngModel)]="usuarioDelServer.apellido" placeholder="Escriba su apellido"/>
+<br/>
+<br/>
+Párrafo que cambia de color si el nombre es igual a "Nico":
+<p [ngClass]="nombre === 'Nico' ? 'nameIsNico' : ''">si!</p>
+
+Estilo que cambia junto con la variable fontStyle:
+<p [ngStyle]="{'font-style': fontStyle}">Ejemplo ngStyle</p>
+
+<br/>
+<br/>
+<h2>Mis conocimientos:</h2>
+<div *ngFor="let curso of cursos">
+    <span>{{curso.nombre}}:</span> &nbsp;
+    <span [ngClass]="curso.hecho ? 'cursoHecho' : 'cursoNoHecho'">{{curso.hecho}}</span> 
+    <span *ngIf="curso.hecho">&nbsp; Nota: {{curso.nota}}</span>
+    <button (click)="deleteCurso(curso.nombre)">Borrar Curso</button>
+</div>
+<br/>
+<br/>
+<container [ngSwitch]="fontStyle">
+    <p *ngSwitchCase="'italic'">Italic</p>
+    <p *ngSwitchCase="'normal'">Normal</p>
+    <p *ngSwitchCase="'oblique'">Oblique</p>
+</container>
