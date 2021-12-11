@@ -7,4 +7,9 @@ import { Component } from '@angular/core';
 })
 export class AppComponent {
   title = 'novitAcademyFront';
+  page = 'gatos';
+
+  goTo(pagina: string) {
+    this.page = pagina;
+  }
 }
