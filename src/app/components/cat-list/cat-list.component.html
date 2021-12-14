@@ -4,7 +4,6 @@
             <th>Nombre</th>
             <th>Edad</th>
             <th>Color</th>
-            <th>Adoptar</th>
             <th>Regalar</th>
             <th>Editar</th>
         </thead>
@@ -13,11 +12,6 @@
                 <td>{{cat.nombre}}</td>
                 <td>{{cat.edad}}</td>
                 <td>{{cat.raza}}</td>
-                <td>
-                    <button mat-mini-fab color="primary" (click)="adopt(cat.idGato)">
-                        <mat-icon>home</mat-icon>
-                    </button>
-                </td>
                 <td>
                     <button mat-mini-fab color="warn" (click)="giveAway(cat.idGato)">
                         <mat-icon>redeem</mat-icon>
@@ -31,9 +25,9 @@
             </tr>
         </tbody>
     </table>
-    <br/>
+    <br />
     <mat-divider></mat-divider>
-    <form [formGroup]="formValues" (ngSubmit)="submit($event)">
+    <form [formGroup]="formValues" (ngSubmit)="submit()">
         <mat-form-field appearance="fill">
             <mat-label>Nombre</mat-label>
             <input matInput formControlName="nombre" placeholder="Nombre" required>
@@ -48,7 +42,13 @@
             <mat-label>Edad</mat-label>
             <input type="number" matInput formControlName="edad" placeholder="Edad">
         </mat-form-field>
-        <button mat-button type="submit">{{editing ? 'Guardar' : 'Cargar'}}</button>
-        <button color="warn" *ngIf="editing" mat-button (click)="cancelEdit()">Cancelar</button>
-      </form>
+
+        <button *ngIf="!isEditing" mat-button type="submit">
+            Adoptar
+        </button>
+        <span *ngIf="isEditing">
+            <button mat-button type="submit">Actualizar</button>
+            <button color="warn" mat-button (click)="cancelEdit()">Cancelar</button>
+        </span>
+    </form>
 </div>

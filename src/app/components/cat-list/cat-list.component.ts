@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Cat } from 'src/app/models/cat';
+import { CatService } from 'src/app/services/cat.service';
 
 @Component({
   selector: 'app-cat-list',
@@ -10,71 +12,23 @@ export class CatListComponent implements OnInit {
 
   formValues: FormGroup;
 
-  constructor(fb: FormBuilder) {
+  constructor(
+        fb: FormBuilder,
+        private catService: CatService
+    ) {
     this.formValues = fb.group({
       nombre: ['', Validators.required],
       raza: ['', Validators.required],
-      edad: ['', Validators.required]
+      edad: ['', Validators.required],
+      idGato: [0, Validators.required]
     });
   }
 
   catList: any = [];
-  editing: boolean = false;
+  isEditing: boolean = false;
 
   ngOnInit(): void {
-    this.catList = [{
-      "idGato": 2,
-      "nombre": "Luna",
-      "edad": 13,
-      "raza": "Siames"
-      },
-      {
-        "idGato": 3,
-        "nombre": "Milo",
-        "edad": 12,
-        "raza": "Persa"
-      },
-      {
-        "idGato": 4,
-        "nombre": "Lupe",
-        "edad": 14,
-        "raza": "Siames"
-      },
-      {
-        "idGato": 5,
-        "nombre": "Clara",
-        "edad": 5,
-        "raza": "Persa"
-      },
-      {
-        "idGato": 7,
-        "nombre": "Manchitas",
-        "edad": 15,
-        "raza": "Manchado"
-      },
-      {
-        "idGato": 8,
-        "nombre": "Manchitas2",
-        "edad": 15,
-        "raza": "Manchado"
-      },
-      {
-        "idGato": 9,
-        "nombre": "Manchitas3",
-        "edad": 15,
-        "raza": "Manchado"
-      },
-      {
-        "idGato": 10,
-        "nombre": "Mimi",
-        "edad": 4,
-        "raza": "Calle"
-      }
-    ];
-  }
-
-  adopt(idGato: number) {
-    console.log('Adopto el gato con Id', idGato);
+    this.getAllCats();
   }
 
   giveAway(idGato: number) {
@@ -83,31 +37,77 @@ export class CatListComponent implements OnInit {
 
   edit(idGato: number) {
     console.log('Edito el gato con Id', idGato);
-    
+
     //Marco que estoy editando
-    this.editing = true;
+    this.isEditing = true;
 
     //Busco el gato a editar
     let cat = this.catList.find((c: any) => c.idGato === idGato);
 
     //Lleno los controles con los datos del gato encontrado
+    
+    this.formValues.controls['idGato'].setValue(idGato);
     this.formValues.controls['nombre'].setValue(cat.nombre);
     this.formValues.controls['raza'].setValue(cat.raza);
     this.formValues.controls['edad'].setValue(cat.edad);
   }
 
-  submit(asd: any) {
-    if(this.formValues.status === 'VALID') {
-      console.log(this.formValues.get('nombre')?.value);
-      console.log(this.formValues.get('raza')?.value);
-      console.log(this.formValues.get('edad')?.value);
+  submit() {
+    if (this.formValues.status === 'VALID') {
+      let aCat = new Cat();
+
+      aCat.nombre = this.formValues.get('nombre')?.value;
+      aCat.idGato = this.formValues.get('idGato')?.value;
+      aCat.raza = this.formValues.get('raza')?.value;
+      aCat.edad = this.formValues.get('edad')?.value;
+
+      if (aCat.idGato != 0)
+      {
+        this.catService.updateCat(aCat).subscribe({
+          next: _ => {
+            // let cat = this.catList.find((c: any) => c.idGato === aCat.idGato);
+            // cat.nombre = aCat.nombre;
+            // cat.edad = aCat.edad;
+            // cat.raza = aCat.raza;
+            this.getAllCats();
+          },
+          error: error => {
+            if (error.status === 401){
+              window.alert('Error de autenticación con el servidor.');
+            }
+            else if (error.status === 400)
+            {
+              window.alert('Error de parametros incorrectos.');
+            }
+            else
+              window.alert('Error desconocido.');
+          }
+        });
+      }
+      else{
+        this.catList.push(
+          {
+          nombre: this.formValues.get('nombre')?.value,
+          edad: this.formValues.get('edad')?.value,
+          raza: this.formValues.get('raza')?.value
+        });
+      }
+
+      this.isEditing = false;
+      this.formValues.reset({});
+
     } else
       window.alert('Debe completar todos los campos');
   }
 
   cancelEdit() {
-    this.editing = false;
+    this.isEditing = false;
     this.formValues.reset();
   }
 
+  getAllCats(){
+    this.catService.getCats().subscribe(
+      gatos => this.catList = gatos
+    );
+  }
 }
