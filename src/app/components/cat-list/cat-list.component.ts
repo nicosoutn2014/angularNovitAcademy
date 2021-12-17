@@ -45,7 +45,7 @@ export class CatListComponent implements OnInit {
     let cat = this.catList.find((c: any) => c.idGato === idGato);
 
     //Lleno los controles con los datos del gato encontrado
-    
+
     this.formValues.controls['idGato'].setValue(idGato);
     this.formValues.controls['nombre'].setValue(cat.nombre);
     this.formValues.controls['raza'].setValue(cat.raza);
